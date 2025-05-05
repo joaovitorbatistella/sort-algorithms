@@ -201,7 +201,7 @@ dados = pd.DataFrame({
 
 # Configurando o layout do matplotlib
 fig, axes = plt.subplots(2, 2, figsize=(14, 10))
-fig.suptitle(f"Análise de Desempenho do Bubble Sort ({optimizedText})", fontsize=16)
+fig.suptitle(f"Análise de Desempenho do Bubble Sort ({optimizedText}) - {type}", fontsize=16)
 
 # 1. Gráfico de Tempo de Execução
 axes[0, 0].plot(input_size, runtime_chart, 'o-', color='blue', linewidth=2, markersize=8)
@@ -243,7 +243,7 @@ plt.loglog(input_size, [n**2 / 10**6 for n in input_size], '--', label='O(n²)',
 plt.loglog(input_size,  [n * np.log(n) / 18000 for n in input_size], '--', label='O(n log n)', linewidth=2)
 plt.xlabel('Tamanho da Entrada (log)')
 plt.ylabel('Tempo (log)')
-plt.title(f"Análise de Complexidade do Bubble Sort {optimizedText}")
+plt.title(f"Análise de Complexidade do Bubble Sort ({optimizedText}) - {type}")
 plt.legend()
 plt.grid(True)
 plt.savefig(f"{my_path}/results/{optimizedText}_{type}_bubble_sort_complexidade.png", dpi=300)
