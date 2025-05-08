@@ -73,6 +73,32 @@ def heapSort(arr):
 
     return arr, counters 
 
+def remove_min_max(data):
+    if not data:
+        return []
+
+    if len(data) < 3:
+        return []
+    
+    result = data.copy()
+    
+    min_val = min(result)
+    result.remove(min_val)
+
+    max_val = max(result)
+    result.remove(max_val)
+    
+    return result
+
+def average_list(list1):
+    if not list1 or len(list1) == 0:
+        return 0
+    
+    if len(list1) >= 5:
+        list1 = remove_min_max(list1)
+
+    return sum(list1) / len(list1)
+
 def createFullyDisorderedList(l_size):
     fully_disordered_arr = list()
 
@@ -90,12 +116,7 @@ def createOrderedList(l_size):
     return ordered_arr
         
 
-def newIntegerList(inp_size=None):
-    type   = new_args.get('-t')
-
-    if(type == None or (type != None and type not in ['ordered', 'random', 'fully_disordered'])):
-        type = 'random'
-
+def newIntegerList(inp_size=None, type='random'):
     if(type == 'random'):
         return np.random.randint(1, inp_size, inp_size)
     elif(type == 'ordered'):
@@ -159,60 +180,79 @@ input_size = [int(num_str) for num_str in size]
 for inp_size in input_size:
     print(f"\n\n\t\t ===== // == Input size ({inp_size}) == // =====")
 
-    # Set-up variables
-    arr = newIntegerList(inp_size)
+    type   = new_args.get('-t')
 
-    if(comparison): 
-        # Create a new array position
-        pre_arr = list(arr)
+    if(type == None or (type != None and type not in ['ordered', 'random', 'fully_disordered'])):
+        type = 'random'
 
-    print("\nUnsorted list is:")
-    np_array = np.array(arr)
-    print(np_array)
+    tries = 1
+    if(type == 'random'):
+        tries = 3
 
-    start_time = time.perf_counter()
-    arr, stats = heapSort(arr)
-    stop_time = time.perf_counter()
+    runtime_range    = list()
+    comparison_range = list()
+    swaps_range      = list()
+    iterations_range = list()
+    
+    for i in range(tries):
+        # Set-up variables
+        arr = newIntegerList(inp_size, type)
+        if(comparison): 
+            # Create a new array position
+            pre_arr = list(arr)
 
-    print("\nSorted list is:")
-    np_array = np.array(arr)
-    print(np_array)
+        print("\nUnsorted list is:")
+        np_array = np.array(arr)
+        print(np_array)
 
-    runtime = (stop_time - start_time)
-    print("\n ===== // ==== // =====")
+        start_time = time.perf_counter()
+        arr, stats = heapSort(arr)
+        stop_time = time.perf_counter()
 
-    print(optimizedText)
+        print("\nSorted list is:")
+        np_array = np.array(arr)
+        print(np_array)
 
-    print(f"\nRuntime: {(runtime * 1000):.4f} milliseconds ({runtime:.2f} sec)")
-    print("Stats:", stats)
+        runtime = (stop_time - start_time)
+        print("\n ===== // ==== // =====")
 
-    runtime_chart.append(runtime)
-    comparison_chart.append(stats.get('comparisons'))
-    swaps_chart.append(stats.get('swaps'))
-    iterations_chart.append(stats.get('iterations'))
+        print(optimizedText)
 
-    if(comparison):
-        pre_np_array = np.array(pre_arr)
-        print(pre_np_array)
-        start_time_c = time.perf_counter()
-        pre_arr, stats_c = heapSort(pre_arr)
-        stop_time_c = time.perf_counter()
+        print(f"\nRuntime: {(runtime * 1000):.4f} milliseconds ({runtime:.2f} sec)")
+        print("Stats:", stats)
 
-        runtime_c = (stop_time_c - start_time_c)
+        print("runtime: ", runtime)
 
-        print("\n ===== // ===== // =====")
+        runtime_range.append(runtime)
+        comparison_range.append(stats.get('comparisons'))
+        swaps_range.append(stats.get('swaps'))
+        iterations_range.append(stats.get('iterations'))
 
-        print('Optimized' if not optimize else 'Non-Optimized')
+        if(comparison):
+            pre_np_array = np.array(pre_arr)
+            print(pre_np_array)
+            start_time_c = time.perf_counter()
+            pre_arr, stats_c = heapSort(pre_arr)
+            stop_time_c = time.perf_counter()
 
-        print(f"\nRuntime: {(runtime_c * 1000):.4f} milliseconds ({runtime_c:.2f} sec)")
-        print("Stats:", stats_c)
+            runtime_c = (stop_time_c - start_time_c)
 
-        print("\n ===== // ===== // =====")
+            print("\n ===== // ===== // =====")
 
-        print(f"\nRuntime diff: {((runtime - runtime_c) * 1000):.4f} milliseconds ({runtime - runtime_c:.2f} sec)")
-        print("Stats diff:", {"comparisons": (stats.get('comparisons') - stats_c.get('comparisons')), "swaps": (stats.get('swaps') - stats_c.get('swaps')), "iterations": (stats.get('iterations') - stats_c.get('iterations'))})
+            print('Optimized' if not optimize else 'Non-Optimized')
 
+            print(f"\nRuntime: {(runtime_c * 1000):.4f} milliseconds ({runtime_c:.2f} sec)")
+            print("Stats:", stats_c)
 
+            print("\n ===== // ===== // =====")
+
+            print(f"\nRuntime diff: {((runtime - runtime_c) * 1000):.4f} milliseconds ({runtime - runtime_c:.2f} sec)")
+            print("Stats diff:", {"comparisons": (stats.get('comparisons') - stats_c.get('comparisons')), "swaps": (stats.get('swaps') - stats_c.get('swaps')), "iterations": (stats.get('iterations') - stats_c.get('iterations'))})
+
+    runtime_chart.append(average_list(runtime_range))
+    comparison_chart.append(average_list(comparison_range))
+    swaps_chart.append(average_list(swaps_range))
+    iterations_chart.append(average_list(iterations_range))
 
 # Configurando o estilo dos gráficos
 plt.style.use('seaborn-v0_8-darkgrid')
